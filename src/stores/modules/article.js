@@ -1,42 +1,48 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
+import { getArticle } from '@/api/article'
 
-export const articleStore =defineStore(
-'hyl-article',
-()=>{
-  //store
-  const article =ref([
-    {
-      id: 1,
-      articleName: '',
-      articleContent: '',
-      articleGroup: '',
-      articleAuthor: ''
+export const articleStore = defineStore(
+  'hyl-article',
+  () => {
+    //store
+    const total = ref(1)
+    const article = ref([
+      {
+        data: '',
+        id: 1,
+        articleName: '',
+        articleContent: '',
+        articleAuthor: '',
+        articleGroup: ''
+      }
+    ])
+    const getArticles = async (curentPage, size) => {
+      // 获取文章数据
+      const pageBean = await getArticle(curentPage, size)
+
+      // console.log(pageBean);
+      // console.log(pageBean.data.data.rows);
+      // console.log(pageBean.data.data.total);
+
+
+      //这里可能出错
+      article.value = pageBean.data.data.rows
+      total.value = pageBean.data.data.total
+      return pageBean.data.data.rows
+    }
+    const setArticleName = (newArticleName) => {
+      article.value.articleName = newArticleName
+    }
+
+
+    return {
+      article,
+      getArticles,
+      setArticleName
+    }
+
+  }, {
+  persist: true
 }
-  ])
-  const getArticle =()=>{
-
-  }
-  
-
-  return{
-    article,
-    getArticle,
-
-  }
-
-},{
-  persist:true
-}
-
-
-
-
-
-
-
-
-
-
-
 )

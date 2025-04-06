@@ -1,13 +1,10 @@
 <template>
-  <el-upload
-    class="avatar-uploader"
-    action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
-    :show-file-list="false"
-    :on-success="handleAvatarSuccess"
-    :before-upload="beforeAvatarUpload"
-  >
+  <el-upload class="avatar-uploader" action="http://localhost:8080/layout/avatar" :show-file-list="false"
+    :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
     <img v-if="imageUrl" :src="imageUrl" class="avatar" />
-    <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
+    <el-icon v-else class="avatar-uploader-icon">
+      <Plus />
+    </el-icon>
   </el-upload>
 </template>
 
@@ -15,16 +12,19 @@
 import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
+import { userUserStore } from '@/stores';
 
 import type { UploadProps } from 'element-plus'
 
 const imageUrl = ref('')
+const userData = userUserStore()
 
 const handleAvatarSuccess: UploadProps['onSuccess'] = (
   response,
   uploadFile
 ) => {
   imageUrl.value = URL.createObjectURL(uploadFile.raw!)
+  userData.setImageUrl(imageUrl.value)
 }
 
 const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
@@ -49,8 +49,8 @@ const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
 
 <style>
 .avatar-uploader .el-upload {
-    /* 定义一个变量来规定颜色,便于修改 */
-  border: 1px dashed var(--el-border-color); 
+  /* 定义一个变量来规定颜色,便于修改 */
+  border: 1px dashed var(--el-border-color);
   border-radius: 6px;
   cursor: pointer;
   position: relative;

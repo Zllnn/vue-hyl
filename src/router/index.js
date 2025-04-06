@@ -7,8 +7,9 @@ const router = createRouter({
     {path:'/login',component:()=>import('@/views/login/LoginPage.vue')}, //登录页面
     {
       path:'/',
-      component:()=> import('@/views/layout/LayoutContainer.vue'),
+      component:()=> import('@/views/layout/LayoutContainer.vue'),//路由懒加载
       redirect:'/article/channel',  //路由重定向
+      // redirect:'/login',
       children:[
       {
          path:'/article/manage',

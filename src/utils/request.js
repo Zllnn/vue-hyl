@@ -3,7 +3,7 @@ import { userUserStore } from "@/stores";
 import router from "@/router";
 
 
-const baseURL = 'http://localhost:8080'                                //需要改成http://localhost:8080
+const baseURL = 'http://localhost:8080'
 
 const instance =axios.create({
   baseURL,

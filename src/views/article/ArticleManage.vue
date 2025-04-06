@@ -1,97 +1,145 @@
 <template>
-  <el-table v-if="1" :data="tableData" style="width: 100%">
-    <el-table-column label="Date" width="180">
-      <template #default="scope">
-        <div style="display: flex; align-items: center">
-          <el-icon><timer /></el-icon>
-          <span style="margin-left: 10px">{{ scope.row.date }}</span>
-        </div>
-      </template>
-    </el-table-column>
-    <el-table-column label="Name" width="180">
-      <template #default="scope">
-        <el-popover effect="light" trigger="hover" placement="top" width="auto">
-          <template #default>
-            <div>name: {{ scope.row.name }}</div>
-            <div>address: {{ scope.row.address }}</div>
+  <div class="tableBody">
+
+    <div class="table">
+      <el-button @click="resetDateFilter">清除日期过滤器</el-button>
+      <el-button @click="clearFilter">清除所有过滤器</el-button>
+      <el-table ref="tableRef" row-key="date" :data="tableData" style="width: 100%">
+        <el-table-column prop="date" label="日期" sortable width="180" column-key="date" :filters="[
+          { text: '2016-05-01', value: '2016-05-01' },
+          { text: '2016-05-02', value: '2016-05-02' },
+          { text: '2016-05-03', value: '2016-05-03' },
+          { text: '2016-05-04', value: '2016-05-04' },
+        ]" :filter-method="filterHandler" />
+        <el-table-column prop="articleName" label="文章名称" width="180" />
+        <el-table-column prop="articleContent" label="文章内容" :formatter="formatterContent" />
+        <el-table-column prop="articleAuthor" label="文章作者" :formatter="formatterAuthor" />
+
+        <el-table-column prop="articleGroup" label="文章分类" width="100" :filters="[
+          { text: '小说', value: '小说' },
+          { text: '趣事', value: '趣事' },
+        ]" :filter-method="filterTag" filter-placement="bottom-end">
+          <template #default="scope">
+            <el-tag :type="scope.row.articleGroup === '小说' ? 'primary' : 'success'" disable-transitions>{{
+              scope.row.articleGroup
+            }}</el-tag>
           </template>
-          <template #reference>
-            <el-tag>{{ scope.row.name }}</el-tag>
-          </template>
-        </el-popover>
-      </template>
-    </el-table-column>
-    <el-table-column label="Operations">
-      <template #default="scope">
-        <el-button size="small" @click="handleEdit(scope.$index, scope.row)">
-          Edit
-        </el-button>
-        <el-button
-          size="small"
-          type="danger"
-          @click="handleDelete(scope.$index, scope.row)"
-        >
-          Delete
-        </el-button>
-      </template>
-    </el-table-column>
-  </el-table>
-  <el-empty v-else description="空空如也" />
+        </el-table-column>
+      </el-table>
+    </div>
+    <!-- 分页 -->
+    <div class="demo-pagination-block">
+      <!-- <div class="demonstration">All combined</div> -->
+      <el-pagination v-model:current-page="currentPage" v-model:page-size="pageSize" :page-sizes="[5, 20, 50, 100]"
+        :size="size" :disabled="disabled" :background="background" layout="prev, pager, next, jumper,->,sizes,total"
+        :total="total" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
+    </div>
+
+  </div>
 </template>
 
-<!-- <script lang="ts" setup>
-import { getArticle } from '@/api/article';
-import { Timer } from '@element-plus/icons-vue'
 
-interface User {
-  id:Int16Array
-  articleContent: string
-  articleName: string
-  articleGroup: string
-  articleAuthor:string
-}
-
-const handleEdit = (index: number, row: User) => {
-  console.log(index, row)
-}
-const handleDelete = (index: number, row: User) => {
-  console.log(index, row)
-}
-const getData=async (page,size)=>{
-return (await getArticle(page,size)).data.data.rows
-}
-const tableData:User =getData(1,10)
-// const tableData: User[] =getData(1,10)
-</script> -->
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue';
-import { getArticle } from '@/api/article';
-import { Timer } from '@element-plus/icons-vue'
 
+// 表格
+import { ref } from 'vue'
+import type { TableColumnCtx, TableInstance } from 'element-plus'
 interface User {
+  date: string
   id: number
-  articleContent: string
   articleName: string
-  articleGroup: string
+  articleContent: string
   articleAuthor: string
+  articleGroup: string
 }
 
-const tableData = ref<User[]>([]); // 使用 ref 存储响应式数据
+const tableRef = ref<TableInstance>()
 
-const handleEdit = (index: number, row: User) => {
-  console.log(index, row);
+const resetDateFilter = () => {
+  tableRef.value!.clearFilter(['date'])
+}
+const clearFilter = () => {
+  tableRef.value!.clearFilter()
+}
+const formatterContent = (row: User, column: TableColumnCtx<User>) => {
+  return row.articleContent
+}
+const formatterAuthor = (row: User, column: TableColumnCtx<User>) => {
+  return row.articleAuthor
+}
+const filterTag = (value: string, row: User) => {
+  return row.articleGroup === value
+}
+const filterHandler = (
+  value: string,
+  row: User,
+  column: TableColumnCtx<User>
+) => {
+  const property = column['property']
+  return row[property] === value
 }
 
-const handleDelete = (index: number, row: User) => {
-  console.log(index, row);
-}
+// const tableData: User[] = [
+const tableData = ref(
+  [
+    {
+      date: '2016-05-03',
+      id: 1,
+      articleName: 'Tom',
+      articleContent: 'hahahahahahahah',
+      articleAuthor: '李典',
+      articleGroup: '小说'
+    },
+    {
+      articleAuthor: "fghjkl",
+      articleContent: "sdfghjklkjhgfdsasdfghklkjhgfdsdfghjklkjhgfdsasdfghjkjhgfd",
+      articleGroup: "小说",
+      articleName: "fghjk",
+      date: null,
+      id: 1
+    }
+  ]
+)
 
-const getData = async (page: number, size: number) => {
-  const response = await getArticle(page, size);
-  return response.data.data.rows;
-}
+// 分页
+import type { ComponentSize } from 'element-plus'
+import { articleStore } from '@/stores'
 
-onMounted(async () => {
-  tableData.value = await getData(1, 10); // 在组件挂载时获取数据
-});
+const article = articleStore()
+const currentPage = ref(1)
+const pageSize = ref(20)
+const total = ref(50)
+const size = ref<ComponentSize>('default')
+const background = ref(false)
+const disabled = ref(false)
+
+const handleSizeChange = (val: number) => {
+  pageSize.value = val
+}
+const handleCurrentChange = async (val: number) => {
+  tableData.value = await article.getArticles(val, pageSize.value)
+}
 </script>
+
+
+<style scoped>
+.tableBody {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+
+.demo-pagination-block {
+  width: 800px;
+  margin: 0 auto;
+  /* margin-left: 100px; */
+}
+
+.demo-pagination-block .demonstration {
+  margin-bottom: 16px;
+}
+</style>

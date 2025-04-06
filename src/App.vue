@@ -3,9 +3,9 @@
 </script>
 
 <template>
-<router-view></router-view>
+  <!-- 路由出口 -->
+  <router-view></router-view>
+
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>
