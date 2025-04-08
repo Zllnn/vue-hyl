@@ -96,6 +96,7 @@ const userData = userStore.getUserData()
         </el-dropdown>
       </el-header>
       <el-main>
+        <!-- 显示子路由 -->
         <router-view></router-view>
       </el-main>
       <el-footer>xx中学校园回忆录</el-footer>

@@ -1,6 +1,7 @@
 <template>
   <div class="tableBody">
 
+    <!-- 表单 -->
     <div class="table">
       <el-button @click="resetDateFilter">清除日期过滤器</el-button>
       <el-button @click="clearFilter">清除所有过滤器</el-button>
@@ -27,9 +28,10 @@
         </el-table-column>
       </el-table>
     </div>
+
+
     <!-- 分页 -->
     <div class="demo-pagination-block">
-      <!-- <div class="demonstration">All combined</div> -->
       <el-pagination v-model:current-page="currentPage" v-model:page-size="pageSize" :page-sizes="[5, 20, 50, 100]"
         :size="size" :disabled="disabled" :background="background" layout="prev, pager, next, jumper,->,sizes,total"
         :total="total" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
@@ -79,7 +81,6 @@ const filterHandler = (
   return row[property] === value
 }
 
-// const tableData: User[] = [
 const tableData = ref(
   [
     {
@@ -107,17 +108,25 @@ import { articleStore } from '@/stores'
 
 const article = articleStore()
 const currentPage = ref(1)
-const pageSize = ref(20)
+const pageSize = ref(5)
 const total = ref(50)
 const size = ref<ComponentSize>('default')
 const background = ref(false)
 const disabled = ref(false)
+
+//页面刷新的数据渲染
+const render = async (curentPage) => {
+  tableData.value = await article.getArticles(curentPage, pageSize.value)
+  total.value = article.getTotal()
+}
+render(currentPage.value)
 
 const handleSizeChange = (val: number) => {
   pageSize.value = val
 }
 const handleCurrentChange = async (val: number) => {
   tableData.value = await article.getArticles(val, pageSize.value)
+  total.value = article.getTotal()
 }
 </script>
 

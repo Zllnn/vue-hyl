@@ -66,7 +66,7 @@ const login = async () => {
     const idData = await getUserIdByToken(fromModel.value.username)
     const id = idData.data.data.id
     userStore.setUserData(id)
-    router.push('/')
+    router.push('/layout')
   } else {
     ElMessage.error('账号或密码错误')
   }

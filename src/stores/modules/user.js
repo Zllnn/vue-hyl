@@ -64,6 +64,7 @@ export const userUserStore = defineStore(
       setToken,
       removeToken,
       user,
+      imageUrl,
       changePassword,
       getPassword,
       getUserData,

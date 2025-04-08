@@ -20,13 +20,6 @@ export const articleStore = defineStore(
     const getArticles = async (curentPage, size) => {
       // 获取文章数据
       const pageBean = await getArticle(curentPage, size)
-
-      // console.log(pageBean);
-      // console.log(pageBean.data.data.rows);
-      // console.log(pageBean.data.data.total);
-
-
-      //这里可能出错
       article.value = pageBean.data.data.rows
       total.value = pageBean.data.data.total
       return pageBean.data.data.rows
@@ -34,12 +27,15 @@ export const articleStore = defineStore(
     const setArticleName = (newArticleName) => {
       article.value.articleName = newArticleName
     }
-
+    const getTotal = () => {
+      return total.value
+    }
 
     return {
       article,
       getArticles,
-      setArticleName
+      setArticleName,
+      getTotal
     }
 
   }, {
