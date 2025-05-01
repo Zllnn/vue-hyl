@@ -3,6 +3,7 @@ import {
   Management,
   Promotion,
   UserFilled,
+  Coin,
   User,
   Crop,
   EditPen,
@@ -36,6 +37,12 @@ const userData = userStore.getUserData()
             <Promotion />
           </el-icon>
           <span>回忆录管理</span>
+        </el-menu-item>
+        <el-menu-item index="/user/datashow">
+          <el-icon>
+            <Coin />
+          </el-icon>
+          <span>用户群体</span>
         </el-menu-item>
 
         <el-sub-menu index="/user">
@@ -95,8 +102,9 @@ const userData = userStore.getUserData()
           </template>
         </el-dropdown>
       </el-header>
+
+      <!-- 显示子路由 -->
       <el-main>
-        <!-- 显示子路由 -->
         <router-view></router-view>
       </el-main>
       <el-footer>xx中学校园回忆录</el-footer>

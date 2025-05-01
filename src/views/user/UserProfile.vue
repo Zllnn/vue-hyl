@@ -14,6 +14,7 @@ const form = ref({
   code,
   studentId
 })
+
 const rules = ref({
   loginName: [
     { required: true, message: '请输入用户昵称', trigger: 'blur' },
@@ -50,11 +51,13 @@ const submitForm = async () => {
   // 提交修改
   await upUserDataService(form.value)
   // 通知 user 模块，进行数据的更新
-  // this.form = getUserData()
+
+  form.value = getUserData()
   // 发请求获取User数据
 
   ElMessage.success('修改成功')
 }
+
 </script>
 <template>
   <!-- 表单部分 -->

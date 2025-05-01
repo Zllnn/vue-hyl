@@ -3,10 +3,24 @@ import request from '@/utils/request'
 
 
 //获取文章
-export const getArticle=(page,size)=>{
+export const getArticle = (page, size) => {
   const data = userUserStore()
   const token = data.token
   return request.get(`/Articles?page=${page}&size=${size}`,
+    {
+      headers: {
+        // Authorization: `Bearer ${token}` // 根据具体需求，可能是Bearer或者其他前缀
+        'taken': token,
+      }
+    }
+  )
+}
+
+//获取文章数量
+export const getArticleCount = () => {
+  const data = userUserStore()
+  const token = data.token
+  return request.get('/Articles/Count',
     {
       headers: {
         // Authorization: `Bearer ${token}` // 根据具体需求，可能是Bearer或者其他前缀

@@ -44,7 +44,7 @@
 <script lang="ts" setup>
 
 // 表格
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import type { TableColumnCtx, TableInstance } from 'element-plus'
 interface User {
   date: string
@@ -113,6 +113,11 @@ const total = ref(50)
 const size = ref<ComponentSize>('default')
 const background = ref(false)
 const disabled = ref(false)
+
+//对pageSize的监听
+watch(pageSize, (newValue, oldValue) => {
+  render(currentPage.value)
+})
 
 //页面刷新的数据渲染
 const render = async (curentPage) => {

@@ -49,6 +49,7 @@ export const userUserStore = defineStore(
     }
     //获取到存储的用户信息并使用
     const getUserData = () => {
+      setUserData(user.value.id)
       return user.value
     }
     const changePassword = async (newPassword, id) => {
