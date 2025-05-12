@@ -1,6 +1,6 @@
 <template>
   <el-upload class="avatar-uploader" action="http://localhost:8080/layout/avatar" :show-file-list="false"
-    :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
+    :headers="uploadHeaders" :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
     <img v-if="imageUrl" :src="imageUrl" class="avatar" />
     <el-icon v-else class="avatar-uploader-icon">
       <Plus />
@@ -13,20 +13,49 @@ import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 import { userUserStore } from '@/stores';
+import { uploadUserAvatar } from '@/api/user';
 
 import type { UploadProps } from 'element-plus'
 
 const imageUrl = ref('')
 const userData = userUserStore()
 
+const token = userData.token
+const uploadHeaders = {
+  // 从本地存储（如 localStorage/sessionStorage）获取 Token
+  'taken': token,
+}
 const handleAvatarSuccess: UploadProps['onSuccess'] = (
   response,
   uploadFile
 ) => {
-  imageUrl.value = URL.createObjectURL(uploadFile.raw!)
-  userData.setImageUrl(imageUrl.value)
+  // const blob = URL.createObjectURL(uploadFile.raw!)
+  //暂时对头像的渲染
+  // const reader = new FileReader();
+  // reader.readAsDataURL(uploadFile.raw!)
+  // reader.onload = () => {
+  //   const base64String = reader.result as string;
+  //   imageUrl.value = base64String
+
+  //   // userData.setImageUrl(base64String)
+  // }
+
+  console.log(response);
+  console.log(response.data);
+
+  if (response.code != 1) {
+    ElMessage.error(response.message)
+  } else {
+    //将store中的imageUrl变成后端返回的地址存储，并发送请求存储到数据库中
+    imageUrl.value = response.data
+    userData.setImageUrl(response.data)
+    ElMessage.success(response.message)
+  }
+  // imageUrl.value = URL.createObjectURL(uploadFile.raw!)
+  // userData.setImageUrl(imageUrl.value)
 }
 
+//监测文件类型
 const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
   if (rawFile.type !== 'image/jpeg') {
     ElMessage.error('Avatar picture must be JPG format!')

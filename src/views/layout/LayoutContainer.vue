@@ -13,11 +13,17 @@ import {
 import router from '@/router';
 import { userUserStore } from '@/stores';
 const handleCommand = (adderss) => {
+
+  if (adderss == '/login') {
+    //设置pinia为空
+    console.log(adderss);
+    userUserStore().removeUserData()
+  }
   router.push(adderss)
 }
 const userStore = userUserStore()
 //获取用户数据进行页面渲染
-const userData = userStore.getUserData()
+const userData = userStore.getUserData_test()
 </script>
 
 <template>

@@ -158,12 +158,12 @@ const cenderCenter = () => {
     },
     legend: {},
     toolbox: {
-      show: true,
-      feature: {
-        dataView: { readOnly: false },
-        restore: {},
-        saveAsImage: {}
-      }
+      // show: true,
+      // feature: {
+      //   dataView: { readOnly: false },
+      //   restore: {},
+      //   saveAsImage: {}
+      // }
     },
     dataZoom: {
       show: false,

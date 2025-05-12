@@ -10,7 +10,7 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 export default defineConfig({
   plugins: [
     vue(),
-        AutoImport({
+    AutoImport({
       resolvers: [ElementPlusResolver()],
     }),
     Components({
@@ -22,5 +22,9 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
+  //实现局域网的共享
+  // server: {
+  //   host: '0.0.0.0' // 监听所有网络接口
+  // }
 })
 
