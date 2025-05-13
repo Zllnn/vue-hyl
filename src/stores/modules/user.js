@@ -71,8 +71,8 @@ export const userUserStore = defineStore(
       // imageUrl.value = user.value.imageUrl
     }
     //获取到存储的用户信息并使用
-    const getUserData = () => {
-      setUserData(user.value.id)
+    const getUserData = async () => {
+      await setUserData(user.value.id)
       return user.value
     }
     const getUserData_test = () => {
