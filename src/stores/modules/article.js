@@ -14,7 +14,8 @@ export const articleStore = defineStore(
         articleName: '',
         articleContent: '',
         articleAuthor: '',
-        articleGroup: ''
+        articleGroup: '',
+        articleDate: ''
       }
     ])
     const getArticles = async (curentPage, size) => {

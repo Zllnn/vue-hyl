@@ -12,18 +12,29 @@ import {
 } from '@element-plus/icons-vue'
 import router from '@/router';
 import { userUserStore } from '@/stores';
+import { ref } from 'vue';
+let outDialogVisible = ref(false)
 const handleCommand = (adderss) => {
 
   if (adderss == '/login') {
-    //设置pinia为空
-    console.log(adderss);
-    userUserStore().removeUserData()
+
+    //弹出一个询问框，询问是否退出（）
+    outDialogVisible.value = true
+  } else {
+    router.push(adderss)
   }
-  router.push(adderss)
 }
 const userStore = userUserStore()
 //获取用户数据进行页面渲染
 const userData = userStore.getUserData_test()
+
+const outLogin = () => {
+  //设置pinia为空
+  // console.log(adderss);
+  userUserStore().removeUserData()
+  outDialogVisible.value = false
+  router.push('/login')
+}
 </script>
 
 <template>
@@ -115,6 +126,17 @@ const userData = userStore.getUserData_test()
       </el-main>
       <el-footer>xx中学校园回忆录</el-footer>
     </el-container>
+    <el-dialog v-model="outDialogVisible" title="提示" width="500" draggable>
+      <span>是否要退出登录？</span>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button type="primary" @click="outDialogVisible = false">取消</el-button>
+          <el-button @click="outLogin">
+            确定
+          </el-button>
+        </div>
+      </template>
+    </el-dialog>
   </el-container>
 </template>
 

@@ -5,6 +5,9 @@
     <div class="table">
       <el-button @click="resetDateFilter">清除日期过滤器</el-button>
       <el-button @click="clearFilter">清除所有过滤器</el-button>
+      <el-button style="width: 140px;height:31px" @click="addArticle">
+        增加文章
+      </el-button>
       <el-table ref="tableRef" row-key="date" :data="tableData" style="width: 100%">
         <el-table-column prop="date" label="日期" sortable width="180" column-key="date" :filters="[
           { text: '2016-05-01', value: '2016-05-01' },
@@ -26,6 +29,16 @@
             }}</el-tag>
           </template>
         </el-table-column>
+        <el-table-column label="操作" width="200">
+          <template #default="scope">
+            <el-button size="small" @click="handleEdit(scope.$index, scope.row)">
+              编辑
+            </el-button>
+            <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)">
+              删除
+            </el-button>
+          </template>
+        </el-table-column>
       </el-table>
     </div>
 
@@ -38,6 +51,77 @@
     </div>
 
   </div>
+  <!-- dialog -->
+  <!-- 增加 -->
+  <el-dialog v-model="addArticleDialogControl" title="增加文章" width="1000px" height="1000px">
+    <el-form :model="form">
+      <el-form-item label="文章名称:" :label-width="labelWidth">
+        <el-input v-model="form.articleName" autocomplete="off" />
+      </el-form-item>
+      <!-- <el-form-item label="文章作者" :label-width="labelWidth">
+        <el-input v-model="form.articleAuthor" autocomplete="off" />
+      </el-form-item> -->
+      <el-form-item label="文章分类:" :label-width="labelWidth">
+        <el-select v-model="form.articleGroup" placeholder="请选择文章分类">
+          <el-option label="趣事" value="小说" />
+          <el-option label="小说" value="趣事" />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="文章内容:" :label-width="labelWidth">
+        <el-input type="textarea" v-model="form.articleContent" autocomplete="off" />
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="addArticleDialogControl = false">取消</el-button>
+        <el-button type="primary" @click="saveArticle">
+          保存
+        </el-button>
+      </div>
+    </template>
+  </el-dialog>
+
+  <!-- 编辑 -->
+  <el-dialog v-model="editDialogControl" title="编辑文章" width="1000px" height="1000px">
+    <el-form :model="form">
+      <el-form-item label="文章名称:" :label-width="labelWidth">
+        <el-input v-model="form.articleName" autocomplete="off" />
+      </el-form-item>
+      <!-- <el-form-item label="文章作者" :label-width="labelWidth">
+        <el-input v-model="form.articleAuthor" autocomplete="off" />
+      </el-form-item> -->
+      <el-form-item label="文章分类:" :label-width="labelWidth">
+        <el-select v-model="form.articleGroup" placeholder="请选择文章分类">
+          <el-option label="趣事" value="小说" />
+          <el-option label="小说" value="趣事" />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="文章内容:" :label-width="labelWidth">
+        <el-input type="textarea" v-model="form.articleContent" autocomplete="off" />
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button type="primary" @click="editDialogControl = false">取消</el-button>
+        <el-button @click="saveEditArticle">
+          保存
+        </el-button>
+      </div>
+    </template>
+  </el-dialog>
+
+  <!-- 删除文章 -->
+  <el-dialog v-model="deleteDialogControl" title="提示" width="500" draggable>
+    <span>是否要删除该文章？</span>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button type="primary" @click="deleteDialogControl = false">取消</el-button>
+        <el-button @click="saveDeleteArticle">
+          确定
+        </el-button>
+      </div>
+    </template>
+  </el-dialog>
 </template>
 
 
@@ -54,8 +138,38 @@ interface User {
   articleAuthor: string
   articleGroup: string
 }
+//对话框标签长度
+const labelWidth = 100 + 'px'
+//对话框数据，用于接收用户输入的中间件
+const form = ref({
+  id: 1,
+  articleName: '',
+  articleContent: '',
+  articleAuthor: '',
+  articleGroup: '',
+  date: ''
+})
 
+//按钮显示隐藏
 const tableRef = ref<TableInstance>()
+const addArticleDialogControl = ref(false)
+const editDialogControl = ref(false)
+const deleteDialogControl = ref(false)
+
+//按钮
+const handleEdit = (index: number, row: User) => {
+  form.value = row
+  editDialogControl.value = true
+  console.log(index, row)
+}
+const handleDelete = (index: number, row: User) => {
+  form.value = row
+  deleteDialogControl.value = true
+  console.log(index, row)
+}
+const addArticle = () => {
+  addArticleDialogControl.value = true
+}
 
 const resetDateFilter = () => {
   tableRef.value!.clearFilter(['date'])
@@ -104,11 +218,14 @@ const tableData = ref(
 
 // 分页
 import type { ComponentSize } from 'element-plus'
-import { articleStore } from '@/stores'
+import { articleStore, userUserStore } from '@/stores'
+import { deleteArticle, uploadArticle } from '@/api/article'
+import { editArticle } from '@/api/article'
+import { userLoginService } from '@/api/user'
 
 const article = articleStore()
 const currentPage = ref(1)
-const pageSize = ref(5)
+const pageSize = ref(20)
 const total = ref(50)
 const size = ref<ComponentSize>('default')
 const background = ref(false)
@@ -132,6 +249,69 @@ const handleSizeChange = (val: number) => {
 const handleCurrentChange = async (val: number) => {
   tableData.value = await article.getArticles(val, pageSize.value)
   total.value = article.getTotal()
+}
+
+// 保存文章
+const saveArticle = async () => {
+  const User = userUserStore()
+  // form.value.articleAuthor = (await User.getUserData()).userName
+  //为减少请求用另外一个函数
+  form.value.articleAuthor = User.getUserData_test().userName
+  const result = await uploadArticle(form.value)
+  addArticleDialogControl.value = false
+  if (result.data.code == 1) {
+    ElMessage({
+      message: result.data.message,
+      grouping: true,
+      type: 'success',
+    })
+  } else {
+    ElMessage({
+      message: result.data.message,
+      grouping: true,
+      type: 'error',
+    })
+  }
+
+  render(currentPage.value)
+}
+//编辑文章
+const saveEditArticle = async () => {
+  const result = await editArticle(form.value)
+  editDialogControl.value = false
+  if (result.data.code == 1) {
+    ElMessage({
+      message: result.data.message,
+      grouping: true,
+      type: 'success',
+    })
+  } else {
+    ElMessage({
+      message: result.data.message,
+      grouping: true,
+      type: 'error',
+    })
+  }
+  render(currentPage.value)
+}
+//删除文章
+const saveDeleteArticle = async () => {
+  const result = await deleteArticle(form.value.id)
+  deleteDialogControl.value = false
+  if (result.data.code == 1) {
+    ElMessage({
+      message: result.data.message,
+      grouping: true,
+      type: 'success',
+    })
+  } else {
+    ElMessage({
+      message: result.data.message,
+      grouping: true,
+      type: 'error',
+    })
+  }
+  render(currentPage.value)
 }
 </script>
 

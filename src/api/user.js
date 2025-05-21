@@ -23,7 +23,7 @@ export const userLoginService = ({ username, password }) => {
   return request.post('/login', { loginName, password })
 }
 
-//通过用户名获取用户id
+//通过用户名获取用户id  /*此处的loginName传不传都不影响，主要通过请求头中的token获取id*/
 export const getUserIdByToken = (loginName) => {
   const data = userUserStore()
   const token = data.token
