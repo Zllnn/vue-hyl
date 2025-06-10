@@ -13,28 +13,52 @@ import {
 import router from '@/router';
 import { userUserStore } from '@/stores';
 import { ref } from 'vue';
+import { ElMessageBox, ElMessage } from 'element-plus';
 let outDialogVisible = ref(false)
 const handleCommand = (adderss) => {
 
   if (adderss == '/login') {
 
     //弹出一个询问框，询问是否退出（）
-    outDialogVisible.value = true
+    // outDialogVisible.value = true
+    ElMessageBox.confirm(
+      '是否退出回忆录管理系统?',
+      '提示',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }
+    ).then(() => {
+      userUserStore().removeUserData()
+      ElMessage({
+        type: 'success',
+        message: '退出成功',
+      })
+      router.push('/login')
+    })
+      .catch(() => {
+        // ElMessage({
+        //   type: 'info',
+        //   message: '取消',
+        // })
+      })
   } else {
     router.push(adderss)
+
   }
 }
 const userStore = userUserStore()
 //获取用户数据进行页面渲染
-const userData = userStore.getUserData_test()
+const userData = ref(userStore.getUserData_test())
 
-const outLogin = () => {
-  //设置pinia为空
-  // console.log(adderss);
-  userUserStore().removeUserData()
-  outDialogVisible.value = false
-  router.push('/login')
-}
+// const outLogin = () => {
+//   //设置pinia为空
+//   // console.log(adderss);
+//   userUserStore().removeUserData()
+//   outDialogVisible.value = false
+//   router.push('/login')
+// }
 </script>
 
 <template>
@@ -62,17 +86,18 @@ const outLogin = () => {
           <span>用户群体</span>
         </el-menu-item>
 
-        <el-sub-menu index="/user">
-          <!-- 插槽 -->
-          <template #title>
+
+        <!-- <el-sub-menu index="/user"> -->
+        <!-- 插槽 -->
+        <!-- <template #title>
             <el-icon>
               <UserFilled />
             </el-icon>
             <span>个人中心</span>
-          </template>
+          </template> -->
 
-          <!-- 展开 -->
-          <el-menu-item index="/user/profile">
+        <!-- 展开 -->
+        <!-- <el-menu-item index="/user/profile">
             <el-icon>
               <User />
             </el-icon>
@@ -90,7 +115,7 @@ const outLogin = () => {
             </el-icon>
             <span>重置密码</span>
           </el-menu-item>
-        </el-sub-menu>
+        </el-sub-menu> -->
       </el-menu>
     </el-aside>
     <el-container>
@@ -126,7 +151,7 @@ const outLogin = () => {
       </el-main>
       <el-footer>xx中学校园回忆录</el-footer>
     </el-container>
-    <el-dialog v-model="outDialogVisible" title="提示" width="500" draggable>
+    <!-- <el-dialog v-model="outDialogVisible" title="提示" width="500" draggable>
       <span>是否要退出登录？</span>
       <template #footer>
         <div class="dialog-footer">
@@ -136,7 +161,7 @@ const outLogin = () => {
           </el-button>
         </div>
       </template>
-    </el-dialog>
+    </el-dialog> -->
   </el-container>
 </template>
 

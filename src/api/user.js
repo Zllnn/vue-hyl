@@ -4,17 +4,8 @@ import request from '@/utils/request'
 
 //注册
 export const userRegisterService = ({ username, password, repassword }) => {
-  const data = userUserStore()
-  const token = data.token
   const loginName = username
-  return request.post('/Users/reg', { loginName, password },
-    {
-      headers: {
-        // Authorization: `Bearer ${token}` // 根据具体需求，可能是Bearer或者其他前缀
-        'taken': token,
-      }
-    }
-  )
+  return request.post('/Users/reg', { loginName, password })
 }
 
 //登录

@@ -68,7 +68,7 @@ const login = async () => {
     userStore.setUserData(id)
     router.push('/layout')
   } else {
-    ElMessage.error('账号或密码错误')
+    ElMessage.error(res.data.message)
   }
 }
 

@@ -1,11 +1,22 @@
 <template>
-  <el-upload class="avatar-uploader" action="http://localhost:8080/layout/avatar" :show-file-list="false"
-    :headers="uploadHeaders" :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
-    <img v-if="imageUrl" :src="imageUrl" class="avatar" />
-    <el-icon v-else class="avatar-uploader-icon">
-      <Plus />
-    </el-icon>
-  </el-upload>
+  <el-dialog v-model="dialogVisible" title="头像上传" width="500" :before-close="handleClose">
+    <el-upload class="avatar-uploader" action="http://localhost:8080/layout/avatar" :show-file-list="false"
+      :headers="uploadHeaders" :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
+      <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+      <el-icon v-else class="avatar-uploader-icon">
+        <Plus />
+      </el-icon>
+    </el-upload>
+    <!-- <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="handleCancle">取消</el-button>
+        <el-button type="primary" @click="submitForm">
+          提交
+        </el-button>
+      </div>
+    </template> -->
+
+  </el-dialog>
 </template>
 
 <script lang="ts" setup>
@@ -16,15 +27,18 @@ import { userUserStore } from '@/stores';
 import { uploadUserAvatar } from '@/api/user';
 
 import type { UploadProps } from 'element-plus'
+import router from '@/router';
 
 const imageUrl = ref('')
 const userData = userUserStore()
+const dialogVisible = ref(true)
 
 const token = userData.token
 const uploadHeaders = {
   // 从本地存储（如 localStorage/sessionStorage）获取 Token
   'taken': token,
 }
+imageUrl.value = userData.getImageUrl()
 const handleAvatarSuccess: UploadProps['onSuccess'] = (
   response,
   uploadFile
@@ -66,12 +80,22 @@ const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
   }
   return true
 }
+
+//对话框部分
+const handleClose = () => {
+  router.back()
+}
 </script>
 
 <style scoped>
+.avatar-uploader {
+  margin-top: 15px;
+  margin-left: 33px;
+}
+
 .avatar-uploader .avatar {
-  width: 178px;
-  height: 178px;
+  width: 400px;
+  height: 400px;
   display: block;
 }
 </style>
@@ -94,8 +118,8 @@ const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
 .el-icon.avatar-uploader-icon {
   font-size: 28px;
   color: #8c939d;
-  width: 178px;
-  height: 178px;
+  width: 400px;
+  height: 400px;
   text-align: center;
 }
 </style>

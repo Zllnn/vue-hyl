@@ -169,6 +169,14 @@ const handleDelete = (index: number, row: User) => {
 }
 const addArticle = () => {
   addArticleDialogControl.value = true
+  form.value = {
+    id: 1,
+    articleName: '',
+    articleContent: '',
+    articleAuthor: '',
+    articleGroup: '',
+    date: ''
+  }
 }
 
 const resetDateFilter = () => {

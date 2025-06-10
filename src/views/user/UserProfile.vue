@@ -1,7 +1,9 @@
-<script setup>
+<script lang="ts" setup>
 import { ref } from 'vue'
+import { ElMessageBox, ElMessage } from 'element-plus'
 import { upUserDataService } from '@/api/user';
 import { userUserStore } from '@/stores';
+import router from '@/router';
 const formRef = ref(null)
 
 const { user: { id, userName, loginName, email, code, studentId }, getUserData } = userUserStore()
@@ -14,6 +16,8 @@ const form = ref({
   code,
   studentId
 })
+
+const dialogVisible = ref(true)
 
 const rules = ref({
   loginName: [
@@ -47,6 +51,7 @@ const rules = ref({
 })
 
 const submitForm = async () => {
+  dialogVisible.value = false
   await formRef.value.validate()
   // 提交修改
   await upUserDataService(form.value)
@@ -55,29 +60,56 @@ const submitForm = async () => {
 
 
   ElMessage.success('修改成功')
+  router.back()
+}
+// const handleClose = (done: () => void) => {
+//   ElMessageBox.confirm('是否关闭?')
+//     .then(() => {
+//       done()
+//     })
+//     .catch(() => {
+//       // catch error
+//     })
+// }
+const handleClose = () => {
+  router.back()
+}
+const handleCancle = () => {
+  dialogVisible.value = false
+  router.back()
 }
 
 </script>
 <template>
-  <!-- 表单部分 -->
-  <el-form ref="formRef" :model="form" :rules="rules" label-width="100px" style="max-width: 600px">
-    <el-form-item label="登录名称">
-      <el-input v-model="form.userName"></el-input>
-    </el-form-item>
-    <el-form-item label="用户昵称" prop="loginName">
-      <el-input v-model="form.loginName"></el-input>
-    </el-form-item>
-    <el-form-item label="用户邮箱" prop="email">
-      <el-input v-model="form.email"></el-input>
-    </el-form-item>
-    <el-form-item label="统一认证码" prop="code">
-      <el-input v-model="form.code"></el-input>
-    </el-form-item>
-    <el-form-item label="学号" prop="studentId">
-      <el-input v-model="form.studentId"></el-input>
-    </el-form-item>
-    <el-form-item>
-      <el-button type="primary" @click="submitForm">提交修改</el-button>
-    </el-form-item>
-  </el-form>
+  <el-dialog v-model="dialogVisible" title="基本资料" width="650" :before-close="handleClose">
+    <!-- 表单部分 -->
+    <el-form ref="formRef" :model="form" :rules="rules" label-width="100px" style="max-width: 600px">
+      <el-form-item label="登录名称">
+        <el-input v-model="form.userName"></el-input>
+      </el-form-item>
+      <el-form-item label="用户昵称" prop="loginName">
+        <el-input v-model="form.loginName"></el-input>
+      </el-form-item>
+      <el-form-item label="用户邮箱" prop="email">
+        <el-input v-model="form.email"></el-input>
+      </el-form-item>
+      <el-form-item label="统一认证码" prop="code">
+        <el-input v-model="form.code"></el-input>
+      </el-form-item>
+      <el-form-item label="学号" prop="studentId">
+        <el-input v-model="form.studentId"></el-input>
+      </el-form-item>
+      <!-- <el-form-item>
+        <el-button type="primary" @click="submitForm">提交修改</el-button>
+      </el-form-item> -->
+    </el-form>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="handleCancle">取消</el-button>
+        <el-button type="primary" @click="submitForm">
+          提交
+        </el-button>
+      </div>
+    </template>
+  </el-dialog>
 </template>
